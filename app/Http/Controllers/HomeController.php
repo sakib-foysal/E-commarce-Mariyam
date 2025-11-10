@@ -217,6 +217,7 @@ public function getCartCount()
     public function ofline_sales()
     {
         $data['setting'] = Setting::first();
+        $data['products'] = Product::all();
         return view('products.ofline_sales', $data);
     }
 

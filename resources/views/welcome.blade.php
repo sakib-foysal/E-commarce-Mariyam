@@ -169,7 +169,7 @@
                             <button class="nav-link " id="nav-tab-three" data-bs-toggle="tab" data-bs-target="#tab-three" type="button" role="tab" aria-controls="tab-three" aria-selected="false">Import</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link " id="nav-tab-two" data-bs-toggle="tab" data-bs-target="#tab-two" type="button" role="tab" aria-controls="tab-two" aria-selected="false">Export</button>
+                            <button class="nav-link " id="nav-tab-two" data-bs-toggle="tab" data-bs-target="#tab-two" type="button" role="tab" aria-controls="tab-two" aria-selected="false">Phone</button>
                         </li>
                     </ul>
                     <a href="{{url('/shop')}}" class="view-more d-none d-md-flex">View More<i class="fi-rs-angle-double-small-right"></i></a>
@@ -430,9 +430,9 @@
                             @php $new=0; @endphp
                             @foreach($categories as $category)
                             @foreach($products->filter(function($data) {
-                                return $data->type == 'Export';
+                                return $data->type == 'Phone';
                             })->take(4) as $data)
-                            @if($data->type=='Export')
+                            @if($data->type=='Phone')
                            @if($data->sub_category && $category->id == $data->sub_category->category->id)
 
 

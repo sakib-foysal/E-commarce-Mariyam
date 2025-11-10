@@ -6,11 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
 use App\Models\Product;
+use App\Models\ProductVariant;
 use App\Models\Category;
 use App\Models\SubCategory;
 use App\Models\Unit;
 use App\Models\Setting;
-use Image;
+use Intervention\Image\Facades\Image;
 
 class ProductController extends Controller
 {
@@ -50,16 +51,30 @@ class ProductController extends Controller
             $file = $request->file('image');
             $name="image" . date('YmdHis') . "." . $file->getClientOriginalExtension();
             $path = public_path('/images/products');
-            $img = Image::make($file->path());
-            $img->resize(500, 500)->save($path.'/'.$name);
+            try {
+                $img = Image::make($file->path());
+                $img->resize(500, 500)->save($path.'/'.$name);
+            } catch (\Intervention\Image\Exception\NotSupportedException $e) {
+                // GD/Imagick not available — fallback to moving the original file without resizing
+                $file->move($path, $name);
+            } catch (\Exception $e) {
+                // Any other image processing error — still move original file so upload succeeds
+                $file->move($path, $name);
+            }
             $data->image = $name;
         }
         if($request->hasfile('image_hover')){
             $file = $request->file('image_hover');
             $name="image_hover" . date('YmdHis') . "." . $file->getClientOriginalExtension();
             $path = public_path('/images/products');
-            $img = Image::make($file->path());
-            $img->resize(500, 500)->save($path.'/'.$name);
+            try {
+                $img = Image::make($file->path());
+                $img->resize(500, 500)->save($path.'/'.$name);
+            } catch (\Intervention\Image\Exception\NotSupportedException $e) {
+                $file->move($path, $name);
+            } catch (\Exception $e) {
+                $file->move($path, $name);
+            }
             $data->image_hover = $name;
         }
         $data->save();
@@ -97,8 +112,14 @@ class ProductController extends Controller
             $file = $request->file('image');
             $name="image" . date('YmdHis') . "." . $file->getClientOriginalExtension();
             $path = public_path('/images/products');
-            $img = Image::make($file->path());
-            $img->resize(500, 500)->save($path.'/'.$name);
+            try {
+                $img = Image::make($file->path());
+                $img->resize(500, 500)->save($path.'/'.$name);
+            } catch (\Intervention\Image\Exception\NotSupportedException $e) {
+                $file->move($path, $name);
+            } catch (\Exception $e) {
+                $file->move($path, $name);
+            }
             $data->image = $name;
         }
         if($request->hasfile('image_hover')){
@@ -106,8 +127,14 @@ class ProductController extends Controller
             $file = $request->file('image_hover');
             $name="image_hover" . date('YmdHis') . "." . $file->getClientOriginalExtension();
             $path = public_path('/images/products');
-            $img = Image::make($file->path());
-            $img->resize(500, 500)->save($path.'/'.$name);
+            try {
+                $img = Image::make($file->path());
+                $img->resize(500, 500)->save($path.'/'.$name);
+            } catch (\Intervention\Image\Exception\NotSupportedException $e) {
+                $file->move($path, $name);
+            } catch (\Exception $e) {
+                $file->move($path, $name);
+            }
             $data->image_hover = $name;
         }
         $data->update();
@@ -118,6 +145,28 @@ class ProductController extends Controller
         $data->quantity = $request->quantity;
         $data->update();
         return back();
+    }
+
+    public function searchProducts(Request $request){
+        $search = $request->get('q');
+
+        $products = Product::where('title', 'LIKE', "%{$search}%")
+            ->orWhere('id', 'LIKE', "%{$search}%")
+            ->limit(20)
+            ->get(['id', 'title', 'sale_price']);
+
+        return response()->json($products);
+    }
+
+    // Return product price (JSON) for AJAX requests
+    public function getPrice($id)
+    {
+        $product = Product::find($id);
+        if (! $product) {
+            return response()->json(['success' => false, 'message' => 'Product not found'], 404);
+        }
+
+        return response()->json(['success' => true, 'price' => $product->sale_price]);
     }
 
 }

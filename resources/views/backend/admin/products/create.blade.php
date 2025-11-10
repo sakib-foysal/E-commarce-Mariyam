@@ -70,13 +70,13 @@
                 <label for="">Type *</label>
                 <select name="type" required class="form-select mt-2 mb-3" id="">
                   <option value="" hidden>Choose</option>
-                  <option value="Import">Import</option>
-                  <option value="Export">Export</option>
-                  <option value="Trade">Trade</option>
+                  <option value="Phone">Phone</option>
+                  <option value="Others">Others</option>
+
                 </select>
             </div>
             <div class="col-md-6">
-                <label for="">Unit *</label>
+                <label for="">Shop Unit *</label>
                 <select name="unit_id" required class="form-select mt-2 mb-3" id="">
                   <option value="" hidden>Choose</option>
                   @foreach($units as $data)

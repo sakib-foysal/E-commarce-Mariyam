@@ -61,7 +61,7 @@
                     <td>{{$data->sale_price}}</td>
                     <td>{{$data->min_quantity}}</td>
                     <td>{{$q}}</td>
-                    <td>{{$data->unit->name}}</td>
+                    <td>{{ optional($data->unit)->name }}</td>
                     @php $q=0; @endphp
                   </tr>
 

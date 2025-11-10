@@ -1,12 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/get-columns', function () {
     return Schema::getColumnListing('stocks');
 });
-
-use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HomeController;
@@ -27,11 +28,12 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\OfflineCartController;
 use App\Http\Controllers\SourceController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\OfflineSalesController;
 
 
 
 Route::get('/search-products', [WelcomeController::class, 'search'])->name('search.products');
-Route::get('/clear-all', function() { Artisan::call('optimize:clear'); return redirect()->to('/'); });
+// cSpell:ignore lanmango fishinsert
 Route::get('/lanmango', [WelcomeController::class, 'lanmango']);
 Route::post('/form-submit', [WelcomeController::class, 'fishinsert'])->name('form.submit');
 Route::get('/form-submissions', [WelcomeController::class, 'index2'])->name('form-submissions.index2');
@@ -64,6 +66,9 @@ Auth::routes();
 Route::get('/source', [HomeController::class, 'source'])->name('source');
 Route::resource('sources', SourceController::class);
 Route::get('/ofline_sales', [HomeController::class, 'ofline_sales'])->name('ofline_sales');
+Route::post('/ofline-sales', [OfflineSalesController::class, 'store'])->name('ofline.sales.store');
+Route::get('/api/products/search', [ProductController::class, 'searchProducts'])->name('api.products.search');
+Route::get('/products/{id}/price', [ProductController::class, 'getPrice'])->name('products.price');
 Route::get('/cart/count', [HomeController::class, 'getCartCount']);
 Route::get('/add-to-cart/{productId}', [HomeController::class, 'addToCart'])->middleware('auth');
 Route::get('/cart', [HomeController::class, 'cart'])->middleware('auth');
@@ -85,6 +90,7 @@ Route::middleware(['auth', 'user-access:user'])->group(function () {
     Route::get('/delete_order_variant/{id}', [OrderVariantController::class,'delete_order_variant']);
     Route::put('/update_user_address', [UserController::class,'update_user_address']);
 });
+
 
 
 
@@ -112,7 +118,6 @@ Route::middleware(['auth', 'user-access:admin'])->group(function () {
 
 
 });
-
 
 Route::get('/clear-all', function() { Artisan::call('optimize:clear'); return redirect()->to('/'); });
 Route::get('/migrate-fresh', function() { Artisan::call('migrate:fresh'); return redirect()->to('/'); });
